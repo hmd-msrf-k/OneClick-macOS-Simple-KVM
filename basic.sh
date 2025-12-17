@@ -23,6 +23,40 @@ MOREARGS=()
 }
 
 # -------------------------------
+# Dynamic CPU selection (always 4)
+# -------------------------------
+CPUS=$(lscpu -e | awk '$NF=="yes"{print $1,$2,$4}')
+
+BEST_CPUS=$(echo "$CPUS" | awk '
+{
+    cpu=$1; node=$2; core=$3;
+    if (!seen[node] && !seen_core[node,core]++) {
+        chosen[node]=chosen[node] ? chosen[node]","cpu : cpu;
+    }
+}
+END {
+    for (n in chosen) print chosen[n];
+}' | head -n 1)
+
+CPU_ARRAY=($(echo "$BEST_CPUS" | tr ',' ' '))
+COUNT=${#CPU_ARRAY[@]}
+
+# Ensure we always have 4 CPUs
+if [ "$COUNT" -lt 4 ]; then
+    NODE=$(echo "$CPUS" | awk 'NR==1{print $2}')
+    # Build exclusion regex from already selected CPUs
+    EXCLUDE=$(printf "|%s" "${CPU_ARRAY[@]}")
+    EXCLUDE=${EXCLUDE:1}
+    EXTRA=$(echo "$CPUS" | awk -v node=$NODE '$2==node{print $1}' \
+        | grep -Ev "($EXCLUDE)" \
+        | head -n $((4-COUNT)))
+    CPU_ARRAY+=($EXTRA)
+fi
+
+CPU_LIST=$(IFS=,; echo "${CPU_ARRAY[*]}")
+echo "Pinning QEMU to CPUs: $CPU_LIST"
+
+# -------------------------------
 # QEMU launch arguments
 # -------------------------------
 args=(
@@ -53,9 +87,9 @@ args=(
 )
 
 # -------------------------------
-# Launch QEMU
+# Launch QEMU pinned to CPUs
 # -------------------------------
-qemu-system-x86_64 "${args[@]}"
+taskset -c $CPU_LIST qemu-system-x86_64 "${args[@]}" &
 
 # Wait a few seconds for VM to start
 sleep 5
