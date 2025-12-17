@@ -64,7 +64,7 @@ args=(
     -m 13G
     -machine q35,accel=kvm
     -smp cores=4,threads=1,sockets=1
-    -cpu Haswell-noTSX,vendor=GenuineIntel,kvm=on,+sse3,+sse4.2,+aes,+xsave,+avx,+xsaveopt,+xsavec,+xgetbv1,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe,+invtsc,+avx2 \
+    -cpu host,kvm=on,+invtsc
     -device isa-applesmc,osk="$OSK"
     -smbios type=2
     -device intel-hda -device hda-output
