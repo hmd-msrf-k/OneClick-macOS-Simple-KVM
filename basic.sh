@@ -64,14 +64,13 @@ args=(
     -m 13G
     -machine q35,accel=kvm
     -smp cores=4,threads=1,sockets=1
-    # A single CPU with two cores, with each core having two threads (4 threads total)
     -cpu Haswell-noTSX,vendor=GenuineIntel,kvm=on,+sse3,+sse4.2,+aes,+xsave,+avx,+xsaveopt,+xsavec,+xgetbv1,+avx2,+bmi2,+smep,+bmi1,+fma,+movbe,+invtsc,+avx2 \
     -device isa-applesmc,osk="$OSK"
     -smbios type=2
     -device intel-hda -device hda-output
     -drive if=pflash,format=raw,readonly=on,file="$OVMF/OVMF_CODE.fd"
     -drive if=pflash,format=raw,file="$OVMF/OVMF_VARS.fd"
-    -vga qxl
+    -vga vmware
     -usb -device usb-ehci,id=ehci -device usb-kbd,bus=ehci.0 -device usb-tablet,bus=ehci.0
     -netdev user,id=net0
     -device vmxnet3,netdev=net0,id=net0,mac=52:54:00:c9:18:27
