@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+#!/bin/bash
+
+# Check if PulseAudio is running
+if ! pgrep -x pulseaudio >/dev/null 2>&1; then
+    pulseaudio --start >/dev/null 2>&1
+fi
+
+sleep 0.5
 
 OSK="ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc"
 VMDIR=$(realpath $(dirname $0))
