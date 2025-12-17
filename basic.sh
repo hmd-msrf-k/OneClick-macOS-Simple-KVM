@@ -41,3 +41,9 @@ args=(
 )
 
 qemu-system-x86_64 "${args[@]}"
+
+# Wait a few seconds for VM to start
+sleep 5
+
+# Auto launch RealVNC Viewer from Windows
+"/mnt/c/Program Files/RealVNC/VNC Viewer/vncviewer.exe" localhost:5900 --fullscreen
