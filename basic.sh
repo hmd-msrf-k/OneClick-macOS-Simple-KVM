@@ -9,18 +9,22 @@ fi
 
 sleep 0.5
 
+# Apple SMC key
 OSK="ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc"
+
+# VM directory and firmware paths
 VMDIR=$(realpath $(dirname $0))
 OVMF=$VMDIR/firmware
-#export QEMU_AUDIO_DRV=pa
-#QEMU_AUDIO_DRV=pa
 
+# Optional headless mode
 MOREARGS=()
-
 [[ "$HEADLESS" = "1" ]] && {
     MOREARGS+=(-nographic -vnc :0 -k en-us)
 }
 
+# -------------------------------
+# QEMU launch arguments
+# -------------------------------
 args=(
     -enable-kvm \
     -m 4G \
@@ -48,6 +52,9 @@ args=(
     "${MOREARGS[@]}"
 )
 
+# -------------------------------
+# Launch QEMU
+# -------------------------------
 qemu-system-x86_64 "${args[@]}"
 
 # Wait a few seconds for VM to start
